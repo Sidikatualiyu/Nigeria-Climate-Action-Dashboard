@@ -53,6 +53,14 @@ st.title(f"Nigeria MRV Dashboard: {indicator} {year}")
 st.info("Demo mode with synthetic data. Replace with GEE exports later.")
 
 # THIS LINE MUST BE HERE
+merged = filtered_admins.merge(filtered_ind, left_on='id', right_on='admin_id')
+
+# Clean column names after merge
+merged = merged.rename(columns={'name_x': 'name'})
+
+st.title(f"Nigeria MRV Dashboard: {indicator} {year}")
+st.info("Demo mode with synthetic data. Replace with GEE exports later.")
+
 col1, col2 = st.columns([2,1])
 
 with col1:
@@ -74,7 +82,11 @@ with col1:
                 'fillColor': colormap(f['properties'].get('mean', 0)), 
                 'color': 'white', 'weight': 1, 'fillOpacity': 0.8
             }, 
-            tooltip=folium.GeoJsonTooltip(fields=['name','mean'], aliases=['State','Value'])
+            tooltip=folium.GeoJsonTooltip(
+                fields=['name','mean'],  # now 'name' exists
+                aliases=['State','Value'],
+                localize=True
+            )
         ).add_to(m)
         colormap.caption = indicator
         colormap.add_to(m)
@@ -87,7 +99,7 @@ with col2:
     if not merged.empty:
         st.metric("National Mean", f"{merged['mean'].mean():.2f}")
         top10 = merged.sort_values('mean', ascending=False).head(10)
-        fig = px.bar(top10, x='name', y='mean', title="Top 10 States")
+        fig = px.bar(top10, x='name', y='mean', title="Top 10 States") # now uses 'name'
         fig.update_layout(xaxis_tickangle=-45, height=400)
         st.plotly_chart(fig, use_container_width=True)
         st.download_button("Download CSV", merged.to_csv(index=False), f"MRV_{indicator}_{year}.csv")
