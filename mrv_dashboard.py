@@ -27,7 +27,7 @@ def generate_dummy_data():
     for year in [2024, 2025]:
         for _, row in admins.iterrows():
             for ind in indicators:
-                if ind == 'NDVI': mean = np.random.uniform(0.2, 0.9)
+                if ind == 'NDVI': mean = np.random.uniform(0, 1)
                 elif ind == 'SOC': mean = np.random.uniform(5, 60)
                 else: mean = np.random.uniform(0, 100)
                 records.append({
