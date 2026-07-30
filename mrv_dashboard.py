@@ -59,7 +59,6 @@ merged = filtered_admins.merge(filtered_ind, left_on='id', right_on='admin_id')
 merged = merged.rename(columns={'name_x': 'name'})
 
 st.title(f"Nigeria MRV Dashboard: {indicator} {year}")
-st.info("Demo mode with synthetic data. Replace with GEE exports later.")
 
 col1, col2 = st.columns([2,1])
 
