@@ -19,9 +19,10 @@ def load_admins():
     gdf['geometry'] = gdf['geometry'].simplify(0.05, preserve_topology=True)
     return gdf
 
-@st.cache_data
-def generate_dummy_data(admins):
+# REMOVED @st.cache_data from here and removed the admins argument
+def generate_dummy_data(): 
     np.random.seed(42)
+    admins = load_admins() # load it inside instead
     records = []
     indicators = ['NDVI','SOC','DesertificationRisk','Flooding','Rainfall']
     for year in [2024, 2025]:
@@ -38,7 +39,7 @@ def generate_dummy_data(admins):
     return pd.DataFrame(records)
 
 admins = load_admins()
-indicators = generate_dummy_data(admins)
+indicators = generate_dummy_data() # no argument now
 
 st.sidebar.title("🇳🇬 Nigeria MRV System - DEMO")
 year = st.sidebar.selectbox("Year", sorted(indicators['year'].unique()))
@@ -58,7 +59,7 @@ with col1:
     if not merged.empty:
         colormap = cm.LinearColormap(['#8B0000','#FFFF00','#006400'],
                                      vmin=merged['mean'].min(), vmax=merged['mean'].max())
-        folium.GeoJson(merged, style_function=lambda f: {
+        folium.GeoJson(merged.to_json(), style_function=lambda f: { # .to_json() fix too
             'fillColor': colormap(f['properties']['mean']), 'color': 'white',
             'weight': 1, 'fillOpacity': 0.8
         }, tooltip=folium.GeoJsonTooltip(fields=['name','mean'], aliases=['State','Value'])).add_to(m)
@@ -71,5 +72,6 @@ with col2:
         st.metric("National Mean", f"{merged['mean'].mean():.2f}")
         fig = px.bar(merged.sort_values('mean', ascending=False).head(10),
                      x='name', y='mean', title="Top 10 States")
+        fig.update_layout(xaxis_tickangle=-45)
         st.plotly_chart(fig, use_container_width=True)
         st.download_button("Download CSV", merged.to_csv(index=False), f"MRV_{indicator}_{year}.csv")
