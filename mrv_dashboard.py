@@ -50,7 +50,7 @@ filtered_ind = indicators[(indicators['year']==year) & (indicators['indicator']=
 merged = filtered_admins.merge(filtered_ind, left_on='id', right_on='admin_id')
 
 st.title(f"Nigeria MRV Dashboard: {indicator} {year}")
-st.info("Demo mode with synthetic data. Replace with GEE exports later.")
+
 
 # THIS LINE MUST BE HERE
 merged = filtered_admins.merge(filtered_ind, left_on='id', right_on='admin_id')
